@@ -1,0 +1,58 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/zephyrproject-rtos/ci:v0.27.4
+      options: --user root
+    strategy:
+      fail-fast: false
+      matrix:
+        board:
+          - nrf52840dk/nrf52840
+          - nrf52833dk/nrf52833
+          - nrf5340dk/nrf5340/cpuapp
+          - native_sim
+
+    env:
+      CMAKE_PREFIX_PATH: /opt/toolchains
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: nrf-connect-starter
+          fetch-depth: 0
+
+      - name: Initialise west workspace
+        working-directory: nrf-connect-starter
+        run: |
+          west init -l .
+          west update --narrow -o=--depth=1
+          west zephyr-export
+
+      - name: Build for ${{ matrix.board }}
+        working-directory: nrf-connect-starter
+        run: |
+          west build -b ${{ matrix.board }} app -- -DBOARD_ROOT=$PWD/app
+
+      - name: Show binary size
+        working-directory: nrf-connect-starter
+        run: |
+          west build -t rom_report || true
+
+      - name: Upload artefacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.board }}
+          path: |
+            nrf-connect-starter/build/zephyr/zephyr.hex
+            nrf-connect-starter/build/zephyr/zephyr.bin
+            nrf-connect-starter/build/zephyr/zephyr.elf
+            nrf-connect-starter/build/zephyr/zephyr.map

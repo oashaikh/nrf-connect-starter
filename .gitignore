@@ -1,0 +1,31 @@
+# Zephyr / west build artefacts
+build/
+build_*/
+twister-out*/
+.west/
+
+# nRF Connect SDK toolchain markers
+.west_marker
+
+# Generated files
+*.bin
+*.hex
+*.elf
+*.map
+*.uf2
+*.zephyr
+*.dts.pre
+zephyr.dts
+zephyr.bin
+
+# CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+
+# Editor
+.vscode/
+.idea/
+
+# Compile commands (regenerated each build)
+compile_commands.json

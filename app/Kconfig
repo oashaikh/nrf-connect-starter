@@ -1,0 +1,9 @@
+mainmenu "NRF Connect Starter"
+
+source "Kconfig.zephyr"
+
+config STARTER_BLINK_INTERVAL_MS
+	int "LED blink interval (ms)"
+	default 500
+	help
+	  How fast LED0 toggles.

@@ -1,0 +1,22 @@
+sample:
+  description: NRF Connect starter sample - blinking LED with logging.
+  name: nrf-connect-starter
+
+common:
+  integration_platforms:
+    - nrf52840dk/nrf52840
+    - nrf52833dk/nrf52833
+    - nrf5340dk/nrf5340/cpuapp
+    - native_sim
+  tags:
+    - gpio
+    - led
+    - starter
+
+tests:
+  sample.starter.blink:
+    harness: console
+    harness_config:
+      type: one_line
+      regex:
+        - "blinker started"
