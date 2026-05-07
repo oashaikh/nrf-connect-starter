@@ -45,11 +45,15 @@ jobs:
         if: success()
         run: west build -t rom_report || true
 
+      - name: Sanitise board name for artifact key
+        id: artkey
+        run: echo "name=$(echo '${{ matrix.board }}' | tr '/' '-')" >> $GITHUB_OUTPUT
+
       - name: Upload artefacts
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.board }}
+          name: build-${{ steps.artkey.outputs.name }}
           path: |
             build/zephyr/zephyr.hex
             build/zephyr/zephyr.bin
