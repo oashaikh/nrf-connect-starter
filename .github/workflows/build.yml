@@ -4,6 +4,7 @@ on:
   push:
     branches: [main]
   pull_request:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -15,10 +16,10 @@ jobs:
       fail-fast: false
       matrix:
         board:
+          - native_sim
           - nrf52840dk/nrf52840
           - nrf52833dk/nrf52833
           - nrf5340dk/nrf5340/cpuapp
-          - native_sim
 
     env:
       CMAKE_PREFIX_PATH: /opt/toolchains
@@ -27,32 +28,31 @@ jobs:
       - uses: actions/checkout@v4
         with:
           path: nrf-connect-starter
-          fetch-depth: 0
+          fetch-depth: 1
 
       - name: Initialise west workspace
-        working-directory: nrf-connect-starter
         run: |
-          west init -l .
-          west update --narrow -o=--depth=1
+          west init -l nrf-connect-starter
+          # Shallow clone everything to keep the download small (NCS is huge)
+          west update -o=--depth=1 -n
           west zephyr-export
 
       - name: Build for ${{ matrix.board }}
-        working-directory: nrf-connect-starter
         run: |
-          west build -b ${{ matrix.board }} app -- -DBOARD_ROOT=$PWD/app
+          west build -b ${{ matrix.board }} nrf-connect-starter/app -p auto
 
-      - name: Show binary size
-        working-directory: nrf-connect-starter
-        run: |
-          west build -t rom_report || true
+      - name: Binary size report
+        if: success()
+        run: west build -t rom_report || true
 
       - name: Upload artefacts
-        if: always()
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: build-${{ matrix.board }}
           path: |
-            nrf-connect-starter/build/zephyr/zephyr.hex
-            nrf-connect-starter/build/zephyr/zephyr.bin
-            nrf-connect-starter/build/zephyr/zephyr.elf
-            nrf-connect-starter/build/zephyr/zephyr.map
+            build/zephyr/zephyr.hex
+            build/zephyr/zephyr.bin
+            build/zephyr/zephyr.elf
+            build/zephyr/zephyr.map
+          if-no-files-found: ignore

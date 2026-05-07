@@ -4,23 +4,11 @@ manifest:
       url-base: https://github.com/nrfconnect
 
   projects:
-    - name: nrf
+    - name: sdk-nrf
       remote: nrfconnect
+      repo-path: sdk-nrf
       revision: v2.7.0
-      import:
-        # Pull Zephyr, MCUboot, NRF HAL, etc. via NCS's own west.yml
-        name-allowlist:
-          - nrf
-          - nrfxlib
-          - zephyr
-          - hal_nordic
-          - mcuboot
-          - mbedtls
-          - segger
-          - cmsis
-          - hostap
-          - tinycrypt
-          - tinycbor
+      import: true
 
   self:
     path: nrf-connect-starter
