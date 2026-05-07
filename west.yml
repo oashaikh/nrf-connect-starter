@@ -4,7 +4,10 @@ manifest:
       url-base: https://github.com/nrfconnect
 
   projects:
-    - name: sdk-nrf
+    # NCS's Kconfig files reference `${ZEPHYR_BASE}/../nrf/...` so the project
+    # name must be `nrf` even though the GitHub repo is `sdk-nrf`. The
+    # `repo-path` separates the two.
+    - name: nrf
       remote: nrfconnect
       repo-path: sdk-nrf
       revision: v2.7.0
